@@ -1,6 +1,6 @@
 async function cargarRegistros() {
   try {
-    const res = await fetch("http://localhost:4000/api/registros");
+    const res = await fetch("https://estacionamiento-bootstrap.onrender.com/api/registros");
     const registros = await res.json();
 
     const tbody = document.querySelector("#tablaRegistros tbody");
@@ -41,7 +41,7 @@ async function cargarRegistros() {
 
 function editarRegistro(id) {
   // Buscar el registro actual por ID
-  fetch(`http://localhost:4000/api/registros`)
+  fetch(`https://estacionamiento-bootstrap.onrender.com/api/registros`)
     .then(res => res.json())
     .then(registros => {
       const registro = registros.find(r => r._id === id);
@@ -55,7 +55,7 @@ function editarRegistro(id) {
 
       if (nuevaPlaca && nuevoTipo && nuevoColor && nuevaAccion) {
         // Enviar al backend
-        fetch(`http://localhost:4000/api/registros/${id}`, {
+        fetch(`https://estacionamiento-bootstrap.onrender.com/api/registros/${id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json"
@@ -82,7 +82,7 @@ function editarRegistro(id) {
 async function eliminarRegistro(id) {
   if (confirm("¿Seguro que deseas eliminar este registro?")) {
     try {
-      const res = await fetch(`http://localhost:4000/api/registros/${id}`, {
+      const res = await fetch(`https://estacionamiento-bootstrap.onrender.com/api/registros/${id}`, {
         method: "DELETE"
       });
       const data = await res.json();

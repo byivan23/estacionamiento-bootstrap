@@ -9,7 +9,7 @@ document.getElementById('registroForm').addEventListener('submit', async (e) => 
   const mensaje = document.getElementById('mensaje');
 
   try {
-    const res = await fetch('http://localhost:4000/api/registros', {
+    const res = await fetch('https://estacionamiento-bootstrap.onrender.com/api/registros', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
