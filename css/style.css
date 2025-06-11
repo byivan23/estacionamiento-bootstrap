@@ -1,0 +1,83 @@
+/* estilo de admin*/
+body.admin {
+    background-image: url("../img/fondo-admin.png"); /* Cambia por fondo-estacionamiento.png en panel-usuario */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+  }
+  
+  /* Contenedor elegante */
+  .contenido-panel,
+  .form-container {
+    background-color: rgba(0, 0, 0, 0.75);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+  }
+  
+  /* Tabla clara sobre fondo oscuro */
+  table th, table td {
+    background-color: white !important;
+    color: black !important;
+  }
+  
+  /* Envoltorio para scroll horizontal si hace falta */
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  /* Etiquetas claras */
+  label {
+    color: #fff;
+  }
+  
+  /*  Estilos de ausuario*/
+  body.usuario {    
+    background-image: url("../img/fondo-estacionamiento.png");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: white;
+    }
+    .form-container {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+    }
+    label {
+      color: #fff;
+    }
+
+    /*estilo login */
+    body.login {
+      background-image: url("../img/fondo-login.png");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: 'Rubik', sans-serif;
+      color: rgb(4, 235, 61);
+    }
+    
+    .login-card {
+      background-color: rgba(222, 222, 222, 0.365);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .login-card h2 {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 1.5rem;
+    }
+    
+    .login-card input {
+      border-radius: 0.5rem;
+    }
+    
+    .login-card button {
+      border-radius: 0.5rem;
+    }
+    
