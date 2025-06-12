@@ -52,6 +52,19 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Ruta para servir el ticket PDF
+router.get('/ticket/:ticketName', (req, res) => {
+  const ticketName = req.params.ticketName;
+  const filePath = path.join(__dirname, 'tickets', ticketName);
+
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error al descargar el ticket:', err);
+      res.status(500).send('No se pudo encontrar el ticket');
+    }
+  });
+});
+
 // Ruta para obtener todos los registros
 router.get('/', async (req, res) => {
     try {
