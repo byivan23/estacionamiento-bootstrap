@@ -5,6 +5,14 @@ const fs = require('fs');
 const PDFDocument = require('pdfkit');
 const path = require('path');
 
+// Ruta para crear el directorio 'tickets' si no existe
+const ticketsDir = path.join(__dirname, 'tickets');
+
+// Verifica si el directorio 'tickets' existe, si no, lo crea
+if (!fs.existsSync(ticketsDir)) {
+  fs.mkdirSync(ticketsDir, { recursive: true });
+}
+
 // Ruta para guardar un nuevo registro y generar el ticket en PDF
 router.post('/', async (req, res) => {
   const { placa, tipo, color, accion } = req.body;
