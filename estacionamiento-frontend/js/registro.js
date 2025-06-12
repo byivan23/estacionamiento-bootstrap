@@ -22,6 +22,14 @@ document.getElementById('registroForm').addEventListener('submit', async (e) => 
     if (res.ok) {
       mensaje.innerHTML = `<div class="alert alert-success">✅ ${data.message}</div>`;
       document.getElementById('registroForm').reset();
+
+      // Crear el enlace de descarga del ticket PDF
+      const downloadLink = document.createElement('a');
+      downloadLink.href = `https://estacionamiento-bootstrap.onrender.com/api/registros/ticket/${placa}-${Date.now()}.pdf`;
+      downloadLink.download = `${placa}-ticket.pdf`;
+      downloadLink.textContent = 'Descargar Ticket';
+      document.getElementById('mensaje').appendChild(downloadLink);
+      
     } else {
       mensaje.innerHTML = `<div class="alert alert-danger">❌ ${data.error}</div>`;
     }
