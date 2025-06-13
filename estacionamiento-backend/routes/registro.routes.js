@@ -6,7 +6,7 @@ const PDFDocument = require('pdfkit');
 const path = require('path');
 
 // Ruta para crear el directorio 'tickets' si no existe
-const ticketsDir = path.join(__dirname, 'tickets');
+const ticketsDir = path.join(__dirname, '../tickets');
 
 // Verifica si el directorio 'tickets' existe, si no, lo crea
 if (!fs.existsSync(ticketsDir)) {
@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
     const doc = new PDFDocument();
     
     // Define el nombre del archivo PDF
-    const filePath = path.join(__dirname, 'tickets', `${placa}-${Date.now()}.pdf`);
+    const filePath = path.join(ticketsDir, `${placa}-${Date.now()}.pdf`);
     
     // Pipe the document to a file
     doc.pipe(fs.createWriteStream(filePath));
@@ -63,7 +63,7 @@ router.post('/', async (req, res) => {
 // Ruta para servir el ticket PDF
 router.get('/ticket/:ticketName', (req, res) => {
   const ticketName = req.params.ticketName;
-  const filePath = path.join(__dirname, 'tickets', ticketName);
+  const filePath = path.join(__dirname, '../tickets', ticketName);
 
   res.sendFile(filePath, (err) => {
     if (err) {
