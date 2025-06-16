@@ -19,44 +19,35 @@ router.post('/', async (req, res) => {
 
   try {
     // Crear el nuevo registro
-    const nuevoRegistro = new Registro({
-      placa,
-      tipo,
-      color,
-      accion
-    });
-
+    const nuevoRegistro = new Registro({ placa, tipo, color, accion });
     await nuevoRegistro.save();
 
-    // Crear un nuevo documento PDF
+    // Crear el PDF en memoria
+    const PDFDocument = require('pdfkit');
     const doc = new PDFDocument();
-    
-    // Define el nombre del archivo PDF
-    const filePath = path.join(ticketsDir, `${placa}-${Date.now()}.pdf`);
-    
-    // Pipe the document to a file
-    doc.pipe(fs.createWriteStream(filePath));
 
-    // Agregar contenido al PDF
-    doc.fontSize(18).text(`Ticket de Estacionamiento`, { align: 'center' });
+    let buffers = [];
+    doc.on('data', buffers.push.bind(buffers));
+    doc.on('end', () => {
+      let pdfData = Buffer.concat(buffers);
+
+      res.writeHead(201, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename=${placa}-ticket.pdf`,
+      });
+      res.end(pdfData);
+    });
+
+    doc.fontSize(18).text('Ticket de Estacionamiento', { align: 'center' });
     doc.fontSize(14).text(`Placa: ${placa}`);
     doc.text(`Tipo: ${tipo}`);
     doc.text(`Color: ${color}`);
     doc.text(`Acción: ${accion}`);
     doc.text(`Fecha de Entrada: ${new Date().toLocaleString()}`);
-
-    // Cerrar el documento
     doc.end();
-
-    // Enviar la respuesta con el mensaje y la ruta del ticket generado
-    res.status(201).json({
-      message: 'Registro agregado y ticket generado con éxito',
-      ticket: filePath // Este es el enlace al archivo PDF generado
-    });
-
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error al agregar el registro y generar el ticket' });
+    res.status(500).json({ error: 'Error al agregar el registro o generar el ticket' });
   }
 });
 

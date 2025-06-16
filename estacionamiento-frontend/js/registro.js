@@ -6,8 +6,6 @@ document.getElementById('registroForm').addEventListener('submit', async (e) => 
   const color = document.getElementById('color').value;
   const accion = document.getElementById('accion').value;
 
-  const mensaje = document.getElementById('mensaje');
-
   try {
     const res = await fetch('https://estacionamiento-bootstrap.onrender.com/api/registros', {
       method: 'POST',
@@ -17,24 +15,21 @@ document.getElementById('registroForm').addEventListener('submit', async (e) => 
       body: JSON.stringify({ placa, tipo, color, accion })
     });
 
-    const data = await res.json();
-
     if (res.ok) {
-      mensaje.innerHTML = `<div class="alert alert-success">✅ ${data.message}</div>`;
-      document.getElementById('registroForm').reset();
-
-      // Crear el enlace de descarga del ticket PDF
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
       const downloadLink = document.createElement('a');
-      downloadLink.href = `https://estacionamiento-bootstrap.onrender.com/api/registros/ticket/${placa}-${Date.now()}.pdf`;
+      downloadLink.href = url;
       downloadLink.download = `${placa}-ticket.pdf`;
       downloadLink.textContent = 'Descargar Ticket';
+      document.getElementById('mensaje').innerHTML = 'Registro exitoso. ';
       document.getElementById('mensaje').appendChild(downloadLink);
-      
+      document.getElementById('registroForm').reset();
     } else {
-      mensaje.innerHTML = `<div class="alert alert-danger">❌ ${data.error}</div>`;
+      const data = await res.json();
+      document.getElementById('mensaje').innerHTML = `❌ ${data.error}`;
     }
   } catch (error) {
-    console.error('Error:', error);
-    mensaje.innerHTML = `<div class="alert alert-danger">❌ Error de conexión al servidor</div>`;
+    document.getElementById('mensaje').innerHTML = `❌ Error de conexión al servidor`;
   }
 });
