@@ -7,8 +7,6 @@ const path = require('path');
 
 // Ruta para crear el directorio 'tickets' si no existe
 const ticketsDir = path.join(__dirname, '../tickets');
-
-// Verifica si el directorio 'tickets' existe, si no, lo crea
 if (!fs.existsSync(ticketsDir)) {
   fs.mkdirSync(ticketsDir, { recursive: true });
 }
@@ -18,13 +16,15 @@ router.post('/', async (req, res) => {
   const { placa, tipo, color, accion } = req.body;
 
   try {
-    // Crear el nuevo registro
     const nuevoRegistro = new Registro({ placa, tipo, color, accion });
     await nuevoRegistro.save();
 
-    // Crear el PDF en memoria
-    const PDFDocument = require('pdfkit');
-    const doc = new PDFDocument();
+    // ------------- BLOQUE DE DISEÑO MEJORADO DEL TICKET PDF -----------------
+    const doc = new PDFDocument({
+      size: "A5", // Más pequeño, tipo ticket
+      margins: { top: 40, bottom: 40, left: 40, right: 40 },
+      autoFirstPage: true
+    });
 
     let buffers = [];
     doc.on('data', buffers.push.bind(buffers));
@@ -38,13 +38,59 @@ router.post('/', async (req, res) => {
       res.end(pdfData);
     });
 
-    doc.fontSize(18).text('Ticket de Estacionamiento', { align: 'center' });
-    doc.fontSize(14).text(`Placa: ${placa}`);
-    doc.text(`Tipo: ${tipo}`);
-    doc.text(`Color: ${color}`);
-    doc.text(`Acción: ${accion}`);
-    doc.text(`Fecha de Entrada: ${new Date().toLocaleString()}`);
+    // Si tienes un logo, descomenta y pon la ruta adecuada:
+    // try {
+      // doc.image("img/logo.png", doc.page.width/2 - 40, 15, { width: 80 });
+    // } catch {}
+
+    // Nombre del estacionamiento
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(20)
+      .fillColor('#007BFF') // azul institucional
+      .text("ESTACIONAMIENTO PALMA", { align: "center" })
+      .moveDown(0.5);
+
+    // Línea divisora
+    doc
+      .moveTo(40, 70)
+      .lineTo(doc.page.width - 40, 70)
+      .strokeColor("#007BFF")
+      .lineWidth(2)
+      .stroke();
+
+    // Datos principales del ticket
+    doc
+      .moveDown(1.5)
+      .font("Helvetica")
+      .fontSize(14)
+      .fillColor('black')
+      .text(`Placa: ${placa}`)
+      .text(`Tipo: ${tipo}`)
+      .text(`Color: ${color}`)
+      .text(`Acción: ${accion}`)
+      .text(`Fecha de Entrada: ${new Date().toLocaleString()}`)
+      .moveDown(2);
+
+    // Línea divisora
+    doc
+      .moveTo(40, doc.y)
+      .lineTo(doc.page.width - 40, doc.y)
+      .strokeColor("#007BFF")
+      .lineWidth(1)
+      .stroke()
+      .moveDown(1);
+
+    // Pie de página
+    doc
+      .font("Helvetica-Oblique")
+      .fontSize(12)
+      .fillColor('gray')
+      .text("¡Gracias por su visita!", { align: "center" });
+
     doc.end();
+    // ------------- FIN BLOQUE DISEÑO MEJORADO -------------------------------
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error al agregar el registro o generar el ticket' });
@@ -66,41 +112,41 @@ router.get('/ticket/:ticketName', (req, res) => {
 
 // Ruta para obtener todos los registros
 router.get('/', async (req, res) => {
-    try {
-      const registros = await Registro.find().sort({ createdAt: -1 }); 
-      res.json(registros);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Error al obtener registros' });
-    }
-  });
+  try {
+    const registros = await Registro.find().sort({ createdAt: -1 }); 
+    res.json(registros);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al obtener registros' });
+  }
+});
 
 // Ruta para eliminar registros en modo admin
 router.delete('/:id', async (req, res) => {
-    try {
-      await Registro.findByIdAndDelete(req.params.id);
-      res.json({ message: 'Registro eliminado' });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Error al eliminar registro' });
-    }
-  });
-  
+  try {
+    await Registro.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Registro eliminado' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al eliminar registro' });
+  }
+});
+
 // Ruta para editar registro en modo admin
 router.put('/:id', async (req, res) => {
-    try {
-      const { id } = req.params;
-      const datosActualizados = req.body;
-  
-      const registroActualizado = await Registro.findByIdAndUpdate(id, datosActualizados, {
-        new: true,
-      });
-  
-      res.json({ message: "Registro actualizado", registro: registroActualizado });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Error al actualizar el registro" });
-    }
-  });
+  try {
+    const { id } = req.params;
+    const datosActualizados = req.body;
+
+    const registroActualizado = await Registro.findByIdAndUpdate(id, datosActualizados, {
+      new: true,
+    });
+
+    res.json({ message: "Registro actualizado", registro: registroActualizado });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al actualizar el registro" });
+  }
+});
 
 module.exports = router;
